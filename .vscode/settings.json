@@ -1,0 +1,20 @@
+{
+    "python-envs.pythonProjects": [
+        {
+            "path": "",
+            "envManager": "ms-python.python:system",
+            "packageManager": "ms-python.python:pip"
+        }
+    ],
+
+    "python.terminal.activateEnvironment": true,
+    "terminal.integrated.profiles": {
+        "Conda (esphome)": {
+            "path": "conda",
+            "args": ["run", "-n", "esphome", "bash"]
+        }
+    },
+    "terminal.integrated.defaultProfile.linux": "Conda (esphome)",
+    "terminal.integrated.defaultProfile.osx": "Conda (esphome)",
+    "terminal.integrated.defaultProfile.windows": "Conda (esphome)"
+}

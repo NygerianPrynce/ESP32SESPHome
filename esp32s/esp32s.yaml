@@ -1,0 +1,33 @@
+esphome:
+  name: esp32s
+  includes:
+    - my_components/blinker/blinker.h
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+external_components:
+  - source:
+      type: local
+      path: ./my_components
+    components: [blinker]
+
+blinker:
+  - platform: blinker
+    id: my_blinker
+
+wifi:
+  ssid: "vuDevices"
+  password: "Acorn1873"
+
+  ap:
+    ssid: "Esp32S Fallback Hotspot"
+    password: "1pGSAMI5OktC"
+
+logger:
+api:
+  password: ""
+ota:
+captive_portal:
