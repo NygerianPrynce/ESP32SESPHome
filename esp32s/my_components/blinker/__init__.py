@@ -1,21 +1,23 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.const import CONF_ID
-
-CODEOWNERS = ["@me"]
-DEPENDENCIES = []
-AUTO_LOAD = []
-MULTI_CONF = True
+from esphome import pins
+from esphome.components import switch
+from esphome.const import CONF_ID, CONF_PIN
 
 blinker_ns = cg.esphome_ns.namespace("blinker")
-Blinker = blinker_ns.class_("Blinker", cg.Component)
+Blinker = blinker_ns.class_("Blinker", switch.Switch, cg.Component)
 
-CONFIG_SCHEMA = cv.Schema({
-    cv.GenerateID(): cv.declare_id(Blinker),
-}).extend(cv.COMPONENT_SCHEMA)
-
-PLATFORM_SCHEMA = CONFIG_SCHEMA  # ✅ THIS is what makes the `platform:` key valid
+CONFIG_SCHEMA = (
+    switch.switch_schema(Blinker)
+    .extend({
+        cv.Required(CONF_PIN): pins.gpio_output_pin_schema,
+    })
+    .extend(cv.COMPONENT_SCHEMA)
+)
 
 async def to_code(config):
-    var = cg.new_Pvariable(config[CONF_ID])
+    var = await switch.new_switch(config)
     await cg.register_component(var, config)
+
+    pin = await cg.gpio_pin_expression(config[CONF_PIN])
+    cg.add(var.set_pin(pin))

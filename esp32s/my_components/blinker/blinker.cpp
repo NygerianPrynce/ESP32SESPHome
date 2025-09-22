@@ -1,34 +1,44 @@
 #include "blinker.h"
 #include "esphome/core/log.h"
+#include "esphome/core/helpers.h"
 #include "esphome/core/hal.h"
-#include "driver/gpio.h"
+
 
 namespace esphome {
 namespace blinker {
 
-static const char *const TAG = "Blinker";
+static const char *const TAG = "blinker";
 
 void Blinker::setup() {
-  gpio_pad_select_gpio(GPIO_NUM_2);
-  gpio_set_direction(GPIO_NUM_2, GPIO_MODE_OUTPUT);
-  last_toggle_time_ = millis();
-  ESP_LOGCONFIG(TAG, "Blinker setup complete on GPIO2");
+  if (this->pin_ != nullptr) {
+    this->pin_->setup();
+    this->pin_->digital_write(false);
+    ESP_LOGCONFIG(TAG, "Blinker initialized");
+  }
+}
+
+void Blinker::write_state(bool state) {
+  this->enabled_ = state;
+  if (!state && this->pin_ != nullptr) {
+    this->pin_->digital_write(false);
+  }
+  this->publish_state(state);
 }
 
 void Blinker::loop() {
-  // optional: toggle LED or do nothing
-}
+  if (!enabled_ || this->pin_ == nullptr) return;
 
-void Blinker::turn_led_on() {
-  gpio_set_level(GPIO_NUM_2, 1);
-}
-
-void Blinker::turn_led_off() {
-  gpio_set_level(GPIO_NUM_2, 0);
+  uint32_t now = millis();
+  if (now - last_toggle_ > 500) {
+    led_state_ = !led_state_;
+    this->pin_->digital_write(led_state_);
+    last_toggle_ = now;
+  }
 }
 
 void Blinker::dump_config() {
-  ESP_LOGCONFIG(TAG, "Blinker active.");
+  ESP_LOGCONFIG(TAG, "Blinker Switch active");
+  LOG_PIN("  Pin: ", this->pin_);
 }
 
 }  // namespace blinker

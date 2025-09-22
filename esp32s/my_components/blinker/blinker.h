@@ -1,24 +1,28 @@
 #pragma once
+
 #include "esphome/core/component.h"
+#include "esphome/core/gpio.h"
+#include "esphome/components/switch/switch.h"
 
 namespace esphome {
 namespace blinker {
 
-class Blinker : public Component {
+class Blinker : public switch_::Switch, public Component {
  public:
   void setup() override;
-  void loop() override;
   void dump_config() override;
+  void loop() override;
 
-  void turn_led_on();
-  void turn_led_off();
-  
+  void set_pin(GPIOPin *pin) { pin_ = pin; }
 
  protected:
-  bool state_ = false;
-  uint32_t last_toggle_time_ = 0;
-};
+  void write_state(bool state) override;
 
+  GPIOPin *pin_{nullptr};
+  bool enabled_{false};
+  bool led_state_{false};
+  uint32_t last_toggle_{0};
+};
 
 }  // namespace blinker
 }  // namespace esphome

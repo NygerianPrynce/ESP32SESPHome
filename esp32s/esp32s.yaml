@@ -1,22 +1,27 @@
 esphome:
   name: esp32s
-  includes:
-    - my_components/blinker/blinker.h
-
+  
 esp32:
   board: esp32dev
   framework:
     type: esp-idf
 
 external_components:
-  - source:
+    source:
       type: local
       path: ./my_components
-    components: [blinker]
+    
+switch:
+
+api:
 
 blinker:
-  - platform: blinker
-    id: my_blinker
+  id: my_blinker
+  pin: GPIO2
+  name: "Blinker Control"
+
+web_server:
+  port: 80
 
 wifi:
   ssid: "vuDevices"
@@ -26,8 +31,3 @@ wifi:
     ssid: "Esp32S Fallback Hotspot"
     password: "1pGSAMI5OktC"
 
-logger:
-api:
-  password: ""
-ota:
-captive_portal:
