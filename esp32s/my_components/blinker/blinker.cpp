@@ -3,7 +3,6 @@
 #include "esphome/core/helpers.h"
 #include "esphome/core/hal.h"
 
-
 namespace esphome {
 namespace blinker {
 
@@ -22,6 +21,14 @@ void Blinker::write_state(bool state) {
   if (!state && this->pin_ != nullptr) {
     this->pin_->digital_write(false);
   }
+  
+  // Send start/stop messages when switch is toggled
+  if (state) {
+    ESP_LOGI(TAG, "UART: BLINKING HAS BEGUN");
+  } else {
+    ESP_LOGI(TAG, "UART: BLINKING HAS ENDED");
+  }
+  
   this->publish_state(state);
 }
 
@@ -33,6 +40,13 @@ void Blinker::loop() {
     led_state_ = !led_state_;
     this->pin_->digital_write(led_state_);
     last_toggle_ = now;
+    
+    // Send message via logger (which goes to UART)
+    if (led_state_) {
+      ESP_LOGI(TAG, "UART: BLINK_ON");
+    } else {
+      ESP_LOGI(TAG, "UART: BLINK_OFF");
+    }
   }
 }
 
